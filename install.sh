@@ -7,10 +7,11 @@ apt install sudo curl nano ufw -y
 # Ask for IP address
 read -p "Enter the allowed IP for UFW rules: " ALLOWED_IP
 
-# Install Marzban Node
-sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban-node.sh)" @ install <<EOF
-
+# Install Marzban Node step by step
+echo -e "\n" | sudo bash -c "$(curl -sL https://github.com/Gozargah/Marzban-scripts/raw/master/marzban-node.sh)" @ install <<EOF
 Y
+
+
 
 
 EOF
@@ -19,8 +20,13 @@ EOF
 curl -sSL https://raw.githubusercontent.com/ackn0wl3dgm3nt/install-caddy/main/install.sh | bash
 
 # Configure Caddy
-echo "Paste your Caddyfile configuration (Press Ctrl+D when done):"
-cat > /etc/caddy/Caddyfile
+echo "Paste your Caddyfile configuration (end with an empty line and press ENTER):"
+USER_CONFIG=""
+while IFS= read -r line; do
+    [[ -z "$line" ]] && break  # Stop reading on an empty line
+    USER_CONFIG+="$line"$'\n'
+done
+echo "$USER_CONFIG" | sudo tee /etc/caddy/Caddyfile > /dev/null
 
 # Restart Caddy
 systemctl restart caddy
